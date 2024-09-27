@@ -1,7 +1,7 @@
 class Constants {
   // static const String eyecareApiUrl = 'http://localhost:8000/api';
   static const String eyecareApiUrl =
-      'https://eye-care-server-lpdp.onrender.com';
+      'https://eye-care-server-lpdp.onrender.com/api';
 }
 
 // http://localhost:8000/api
