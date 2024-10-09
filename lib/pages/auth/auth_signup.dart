@@ -26,6 +26,10 @@ class _AuthSignup extends State<AuthSignup> {
 
   final TextEditingController _passwordController = TextEditingController();
 
+  // Add state variables for password visibility
+  bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
+
   final Map<String, String?> _signupForm = {
     "firstName": null,
     "lastName": null,
@@ -125,10 +129,23 @@ class _AuthSignup extends State<AuthSignup> {
                     TextFormField(
                       controller: _passwordController,
                       validator: (value) => passwordValidator(value),
-                      decoration: getInputDecorator(context, "Password"),
-                      style: getInputStyle(context),
+                      decoration: getInputDecorator(
+                        context,
+                        "Password",
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _isPasswordVisible = !_isPasswordVisible;
+                            });
+                          },
+                        ),
+                        ),
+                      style: getInputStyle(context), 
                       onSaved: (value) => {_signupForm['password'] = value},
-                      obscureText: true,
+                      obscureText: !_isPasswordVisible,
                     ),
                     const SizedBox(
                       height: 16,
@@ -137,9 +154,22 @@ class _AuthSignup extends State<AuthSignup> {
                     TextFormField(
                       validator: (value) => repeatPasswordValidator(
                           value, _passwordController.text),
-                      decoration: getInputDecorator(context, "Repeat Password"),
+                      decoration: getInputDecorator(
+                        context, 
+                        "Repeat Password",
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                            });
+                          },
+                        ),
+                        ),
                       style: getInputStyle(context),
-                      obscureText: true,
+                      obscureText: !_isConfirmPasswordVisible,
                     ),
                   ],
                 ),

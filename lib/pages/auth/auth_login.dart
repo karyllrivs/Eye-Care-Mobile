@@ -27,6 +27,9 @@ class _AuthLogin extends State<AuthLogin> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  // Add state variable for password visibility
+  bool _isPasswordVisible = false;
+
   final Map<String, String?> _loginForm = {
     "email": null,
     "password": null,
@@ -128,9 +131,23 @@ class _AuthLogin extends State<AuthLogin> {
                     TextFormField(
                       controller: _passwordController,
                       onSaved: (value) => _loginForm['password'] = value,
-                      decoration: getInputDecorator(context, "Password"),
+                      validator: (value) => passwordValidator(value),
+                      decoration: getInputDecorator(
+                        context, 
+                        "Password",
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _isPasswordVisible = !_isPasswordVisible;
+                            });
+                          },
+                        ),
+                        ),
                       style: getInputStyle(context),
-                      obscureText: true,
+                      obscureText: !_isPasswordVisible,
                     ),
                   ],
                 ),

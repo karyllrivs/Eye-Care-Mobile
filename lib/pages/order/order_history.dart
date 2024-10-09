@@ -63,7 +63,7 @@ class _OrderHistory extends State<OrderHistory> {
                               Icons.storefront,
                             ),
                             title: Text(
-                              "Delivered on ${order.deliveredOn}",
+                              "Ordered on ${order.deliveredOn}",
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
