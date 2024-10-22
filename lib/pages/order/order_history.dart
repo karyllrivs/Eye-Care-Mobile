@@ -27,6 +27,14 @@ class _OrderHistory extends State<OrderHistory> {
   @override
   void didChangeDependencies() {
     orders = context.watch<OrderViewModel>().orders;
+
+    // Sort orders by deliveredOn date (most recent first)
+    orders.sort((a, b) {
+      DateTime dateA = DateTime.parse(a.deliveredOn); // Parse to DateTime
+      DateTime dateB = DateTime.parse(b.deliveredOn);
+      return dateB.compareTo(dateA); // Sort by descending order
+    });
+
     super.didChangeDependencies();
   }
 
@@ -175,41 +183,47 @@ class _OrderHistory extends State<OrderHistory> {
                           ),
                         ),
                         InkWell(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => AddRating(
-                                  productId: order.productId,
-                                ),
-                              ),
-                            );
-                          },
-                          child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 5),
-                              decoration: BoxDecoration(
-                                color: themeData.colorScheme.primary,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.note_alt_outlined,
-                                    color: themeData.colorScheme.surface,
-                                    size: 15,
-                                  ),
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
-                                  Text(
-                                    "Add review",
-                                    style: TextStyle(
-                                      color: themeData.colorScheme.surface,
+                          onTap: order.status == OrderStatus.delivered.name
+                              ? () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => AddRating(
+                                        productId: order.productId,
+                                      ),
                                     ),
+                                  );
+                                }
+                              : null, // Disable if not delivered
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 5),
+                            decoration: BoxDecoration(
+                              color: order.status ==
+                                      OrderStatus.delivered.name
+                                  ? themeData.colorScheme.primary
+                                  : Colors.grey, // Grey out if not delivered
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.note_alt_outlined,
+                                  color: themeData.colorScheme.surface,
+                                  size: 15,
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Text(
+                                  "Add review",
+                                  style: TextStyle(
+                                    color: themeData.colorScheme.surface,
                                   ),
-                                ],
-                              )),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ],
                     ),
