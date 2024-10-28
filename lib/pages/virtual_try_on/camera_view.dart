@@ -27,7 +27,19 @@ class _CameraViewState extends State<CameraView> {
 
   Future<void> initializedCameras() async {
     cameras = await availableCameras();
-    CameraDescription camera = cameras[cameraIndex];
+    
+    // Find the front camera
+    CameraDescription? frontCamera;
+    for (var camera in cameras) {
+      if (camera.lensDirection == CameraLensDirection.front) {
+        frontCamera = camera;
+        cameraIndex = cameras.indexOf(camera); // Set cameraIndex to front camera's index
+        break;
+      }
+    }
+
+    // Use the front camera if available, otherwise default to the first camera
+    CameraDescription camera = frontCamera ?? cameras[0];
 
     controller = CameraController(
       camera, ResolutionPreset.max,
