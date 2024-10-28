@@ -7,6 +7,7 @@ import 'package:eyecare_mobile/shared/widgets/navbar.dart';
 import 'package:eyecare_mobile/view_model/order.view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 class OrderHistory extends StatefulWidget {
   const OrderHistory({super.key});
@@ -28,14 +29,31 @@ class _OrderHistory extends State<OrderHistory> {
   void didChangeDependencies() {
     orders = context.watch<OrderViewModel>().orders;
 
-    // Sort orders by deliveredOn date (most recent first)
+    // Sort orders by deliveredOn date (most recent first), with error handling
     orders.sort((a, b) {
-      DateTime dateA = DateTime.parse(a.deliveredOn); // Parse to DateTime
-      DateTime dateB = DateTime.parse(b.deliveredOn);
-      return dateB.compareTo(dateA); // Sort by descending order
+      try {
+        DateTime dateA = DateTime.parse(a.deliveredOn ?? ""); // Parse to DateTime
+        DateTime dateB = DateTime.parse(b.deliveredOn ?? "");
+        return dateB.compareTo(dateA); // Sort by descending order
+      } catch (e) {
+        print("Error parsing dates: $e");
+        return 0; // Keep order if date parsing fails
+      }
     });
 
     super.didChangeDependencies();
+  }
+
+  // Format the display date with fallback to current date
+  String formattedDate(String? date) {
+    try {
+      // Try parsing the provided date
+      DateTime parsedDate = DateTime.parse(date ?? "");
+      return DateFormat('MM/dd/yyyy').format(parsedDate); // Change format as needed
+    } catch (e) {
+      // Return today's date if parsing fails
+      return DateFormat('MM/dd/yyyy').format(DateTime.now());
+    }
   }
 
   @override
@@ -71,7 +89,7 @@ class _OrderHistory extends State<OrderHistory> {
                               Icons.storefront,
                             ),
                             title: Text(
-                              "Ordered on ${order.deliveredOn}",
+                              "Ordered on ${formattedDate(order.deliveredOn)}",
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
@@ -159,8 +177,7 @@ class _OrderHistory extends State<OrderHistory> {
                                   ? themeData.colorScheme.primary
                                   : order.status == OrderStatus.canceled.name
                                       ? Colors.red
-                                      : order.status ==
-                                              OrderStatus.delivered.name
+                                      : order.status == OrderStatus.delivered.name
                                           ? Colors.green
                                           : Colors.yellow,
                             ),
@@ -175,8 +192,7 @@ class _OrderHistory extends State<OrderHistory> {
                                   ? themeData.colorScheme.primary
                                   : order.status == OrderStatus.canceled.name
                                       ? Colors.red
-                                      : order.status ==
-                                              OrderStatus.delivered.name
+                                      : order.status == OrderStatus.delivered.name
                                           ? Colors.green
                                           : Colors.yellow,
                             ),
@@ -199,8 +215,7 @@ class _OrderHistory extends State<OrderHistory> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 5),
                             decoration: BoxDecoration(
-                              color: order.status ==
-                                      OrderStatus.delivered.name
+                              color: order.status == OrderStatus.delivered.name
                                   ? themeData.colorScheme.primary
                                   : Colors.grey, // Grey out if not delivered
                               borderRadius: BorderRadius.circular(10),
